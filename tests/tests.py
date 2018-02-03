@@ -10,6 +10,7 @@ class SimpleTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = Sanic()
+        cls.routes_path = 'tests.example.routes'
 
     def _get_routes(self):
         """
@@ -20,7 +21,7 @@ class SimpleTestCase(TestCase):
 
         with patch('tests.tests.SimpleTestCase.app') as app_mock:
             app_mock.add_route = lambda handle, uri, name: routes.append(name)
-            autodiscovery(self.app, 'tests.example.routes')
+            autodiscovery(self.app, self.routes_path)
         return routes
 
     def test_autodiscovery_names(self):
@@ -33,9 +34,9 @@ class SimpleTestCase(TestCase):
     def test_url_for(self):
         schema_id = 9000
 
-        # Real routes auto discovery
+        # Routes discovery
         #
-        autodiscovery(self.app, 'tests.example.routes')
+        autodiscovery(self.app, self.routes_path)
 
         # Check for a needed URL
         #
