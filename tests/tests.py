@@ -1,9 +1,10 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from sanic import Sanic
 
-from sanic_router import autodiscovery
+from sanic_router import autodiscovery, Url
+from sanic_router.exceptions import RouterException
 
 
 class SimpleTestCase(TestCase):
@@ -27,7 +28,7 @@ class SimpleTestCase(TestCase):
     def test_autodiscovery_names(self):
         routes = self._get_routes()
 
-        # Are all routes have expected names?
+        # Check the expected names
         #
         self.assertListEqual(routes, ['index', 'schema:list', 'schema:detail'])
 
@@ -41,3 +42,18 @@ class SimpleTestCase(TestCase):
         # Check for a needed URL
         #
         self.assertEqual(self.app.url_for('schema:detail', id=schema_id), '/schema/%d' % schema_id)
+
+    def test_url_names_duplication(self):
+        module_mock = Mock(spec=('routes',))
+        module_mock.routes = (
+            Url('some_url', Mock(), name='list'),
+            Url('some_url/<id>/', Mock(), name='list'),  # <- the name duplication is here
+        )
+
+        with self.assertRaises(RouterException):
+            with patch('importlib.import_module') as import_module_mock:
+                import_module_mock.return_value = module_mock
+
+                # Autodiscovery mocked modules
+                #
+                autodiscovery(self.app, self.routes_path)

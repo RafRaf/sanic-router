@@ -1,0 +1,2 @@
+class RouterException(Exception):
+    pass
