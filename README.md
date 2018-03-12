@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/RafRaf/sanic-router.svg?branch=master)](https://travis-ci.org/RafRaf/sanic-router)
 # Sanic-router
 
 Powerful Django-like router for Sanic. The process of using it is very simple and intuitive. Just run `autodiscovery`.
