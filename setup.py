@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name="sanic-router",
-    version="0.1.1",
+    name='sanic-router',
+    version='0.1.1',
     packages=find_packages(exclude=('tests/*',)),
     install_requires=('Sanic==0.7.0',),
     author='RafRaf',
