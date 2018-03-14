@@ -8,12 +8,18 @@ from sanic_router.exceptions import RouterException
 
 
 class SimpleTestCase(TestCase):
+    EXPECTED_ROUTES = [
+        'index',
+        'schema:list',
+        'schema:detail',
+    ]
+
     @classmethod
     def setUpClass(cls):
         cls.app = Sanic()
         cls.routes_path = 'tests.example.routes'
 
-    def _get_routes(self):
+    def _get_routes(self, sep: str=None):
         """
         Get a list of all discovered routes
         :return: list of routes
@@ -22,7 +28,7 @@ class SimpleTestCase(TestCase):
 
         with patch('tests.tests.SimpleTestCase.app') as app_mock:
             app_mock.add_route = lambda handle, uri, name: routes.append(name)
-            autodiscovery(self.app, self.routes_path)
+            autodiscovery(self.app, self.routes_path, sep)
         return routes
 
     def test_autodiscovery_names(self):
@@ -30,7 +36,7 @@ class SimpleTestCase(TestCase):
 
         # Check the expected names
         #
-        self.assertListEqual(routes, ['index', 'schema:list', 'schema:detail'])
+        self.assertListEqual(routes, self.EXPECTED_ROUTES)
 
     def test_url_for(self):
         schema_id = 9000
@@ -57,3 +63,14 @@ class SimpleTestCase(TestCase):
                 # Autodiscovery mocked modules
                 #
                 autodiscovery(self.app, self.routes_path)
+
+    def test_route_separator(self):
+        sep = '.'
+        routes = self._get_routes(sep)
+
+        # Check the expected names
+        #
+        self.assertListEqual(
+            routes,
+            list(map(lambda x: x.replace(':', sep), self.EXPECTED_ROUTES)),
+        )

@@ -2,13 +2,15 @@ from sanic_router.exceptions import RouterException
 from sanic_router.utils import Url, Include
 
 
-def autodiscovery(app, root_url: [Url, str]):
+def autodiscovery(app, root_url: [Url, str], sep: str=None):
     """
     Make auto discovery for routes
-    :param app: an Sanic's application
-    :param root_url: an dot.notation.path.to.first.route file or Include object
+    :param app: Sanic's application
+    :param root_url: dot.notation.path.to.first.route file or Include object
+    :param sep: a character used as a separator on concatenation
     """
     all_route_names = set()
+    separator = sep or ':'
 
     def discovery(url: [Url, str], prefix: str=None, namespaces: tuple=None):
         for url_object in url.handler.routes:
@@ -18,7 +20,7 @@ def autodiscovery(app, root_url: [Url, str]):
                 new_namespaces = (namespaces or tuple()) + (url_object.handler.namespace or '',)
                 discovery(url_object, new_uri, new_namespaces)
             else:
-                new_name = ':'.join(namespaces + (url_object.name,)) if namespaces else url_object.name
+                new_name = separator.join(namespaces + (url_object.name,)) if namespaces else url_object.name
 
                 # Check for duplication
                 #
