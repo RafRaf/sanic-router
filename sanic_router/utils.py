@@ -21,9 +21,9 @@ class Include:
 
             self.routes = getattr(module, 'routes')
         except ImportError:
-            raise NotImplemented('Can\'t import route module: %s' % module_name)
+            raise NotImplementedError('Can\'t import route module: %s' % module_name)
         except AttributeError:
-            raise NotImplemented('Route module (%s) does not have routes definition' % module_name)
+            raise NotImplementedError('Route module (%s) does not have routes definition' % module_name)
 
     def __repr__(self):
         return '%s: %s' % (self.module_name, ','.join(self.routes))
